@@ -1,0 +1,81 @@
+<html>
+<head>
+    <title>Sentence Tense Identifier</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/uikit.min.css"/>
+    <script src="js/uikit.min.js"></script>
+    <script src="js/uikit-icons.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+    <script>
+        'use strict';
+        window.onload = function () {
+            let sentenceInput = document.getElementById("sentenceInput");
+            let resultLabel = document.getElementById("result");
+            /*sentenceInput.onkeydown = function () {
+                if (sentenceInput.value != "") {
+                    let tense = fetchTense(sentenceInput.value,resultLabel);
+               } else {
+                   resultLabel.innerText = `I think the tense of the sentence is ...`;
+                }
+            }*/
+            let previousSentence;
+            setInterval(function () {
+                if (sentenceInput.value!=="") {
+                    if (sentenceInput.value != previousSentence) {
+                        previousSentence = sentenceInput.value;
+                        fetchTense(sentenceInput.value, resultLabel)
+                    }
+                } else {
+                    resultLabel.innerText = `I think the tense of the sentence is ...`;
+                }
+            },1000);
+        }
+
+        function fetchTense(sentence,resultLabel){
+            const http = new XMLHttpRequest();
+            let address = document.documentURI+"api/sentence/tense/" + sentence;
+            http.open("GET",address);
+            http.send();
+            http.onreadystatechange = function () {
+                if (this.readyState==4 && this.status==200) {
+                    let response = JSON.parse(this.responseText);
+                    resultLabel.innerText = `I think the tense of the sentence is ${tenses[response.tenseID]}`;
+                }
+            }
+        }
+
+        let tenses = [
+            "Present Simple",
+            "Present Continuous",
+            "Present Perfect Simple",
+            "Present Perfect Continuous",
+            "Past Simple",
+            "Past Continuous",
+            "Past Perfect Simple",
+            "Past Perfect Continuous",
+            "Future Simple",
+            "Future Continuous",
+            "Future Perfect Simple",
+            "Future Perfect Continuous"
+        ]
+    </script>
+</head>
+<body>
+<div class="uk-container">
+    <h1>Sentence Tense Identifier</h1>
+    <input id="sentenceInput" class="uk-input" type="text" placeholder="Enter sentence to identify it's tense" style="width: 80vw">
+    <p id="result">I think the tense of the sentence is ...</p>
+</div>
+</body>
+</html>
